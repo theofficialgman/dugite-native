@@ -28,6 +28,12 @@
         "checksum": "a10bb562658a65ad0e22f331bc43f2cb292a57d21c5b26f52794257e48fcbe10"
       },
       {
+        "platform": "linux",
+        "arch": "arm64",
+        "name": "git-lfs-linux-arm64-v3.1.2.tar.gz",
+        "checksum": "c6152c4e24e0575396ee80be8049bf258659fec552f81b410705beed25712ba0"
+      },
+      {
         "platform": "windows",
         "arch": "x86",
         "name": "git-lfs-windows-386-v3.1.2.zip",
