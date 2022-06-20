@@ -28,6 +28,24 @@
         "checksum": "f97f3e40261d872a246f6fb2c96adf132f96c1428f70b4d0e5a644f98481fb76"
       },
       {
+        "platform": "linux",
+        "arch": "386",
+        "name": "git-lfs-linux-386-v3.1.4.tar.gz",
+        "checksum": "1ded175d5aa307f01080fb5ba84ae0ab75665adc933cb1f8178cbbde537a5595"
+      },
+      {
+        "platform": "linux",
+        "arch": "arm64",
+        "name": "git-lfs-linux-arm64-v3.1.4.tar.gz",
+        "checksum": "c44b4070693f2e8eface24b6b2d5915e6cb1a6dd243e8c1cfcaa72ffe702ee56"
+      },
+      {
+        "platform": "linux",
+        "arch": "arm",
+        "name": "git-lfs-linux-arm-v3.1.4.tar.gz",
+        "checksum": "bc4026580aa9efbdfabd4361b8739ace02364245a9797988a875fe2b1c17d376"
+      },
+      {
         "platform": "windows",
         "arch": "x86",
         "name": "git-lfs-windows-386-v3.1.4.zip",

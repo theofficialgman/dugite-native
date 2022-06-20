@@ -20,11 +20,12 @@ if [[ -z "${CURL_INSTALL_DIR}" ]]; then
   exit 1
 fi
 
-if [ "$TARGET_ARCH" = "64" ]; then
-  DEPENDENCY_ARCH="amd64"
-else
-  DEPENDENCY_ARCH="x86"
-fi
+case "$TARGET_ARCH" in
+  "64") DEPENDENCY_ARCH="amd64" ;;
+  "arm64") DEPENDENCY_ARCH="arm64" ;;
+  "arm") DEPENDENCY_ARCH="arm" ;;
+  *) DEPENDENCY_ARCH="386" ;;
+esac
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_LFS_VERSION="$(jq --raw-output '.["git-lfs"].version[1:]' dependencies.json)"
@@ -72,7 +73,7 @@ DESTDIR="$DESTINATION" \
 if [[ "$GIT_LFS_VERSION" ]]; then
   echo "-- Bundling Git LFS"
   GIT_LFS_FILE=git-lfs.tar.gz
-  GIT_LFS_URL="https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-amd64-v${GIT_LFS_VERSION}.tar.gz"
+  GIT_LFS_URL="https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-${DEPENDENCY_ARCH}-v${GIT_LFS_VERSION}.tar.gz"
   echo "-- Downloading from $GIT_LFS_URL"
   curl -sL -o $GIT_LFS_FILE "$GIT_LFS_URL"
   COMPUTED_SHA256=$(compute_checksum $GIT_LFS_FILE)
