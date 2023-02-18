@@ -44,6 +44,10 @@ jobs:
           - os: ubuntu-18.04
             friendlyName: Linux
             targetPlatform: ubuntu
+          - os: ubuntu-22.04
+            friendlyName: Linux
+            targetPlatform: ubuntu
+            arch: arm64
         exclude:
           - os: macos-10.15
             arch: x86
@@ -74,13 +78,42 @@ jobs:
         run: npm run prettier
       - name: Build tools
         run: npm run check
-      - name: Install extra dependencies for building Git on Ubuntu (x64)
+      - name: Build (Ubuntu x64)
         if: matrix.targetPlatform == 'ubuntu' && matrix.arch == 'x64'
+        shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install libcurl4-openssl-dev libexpat1-dev gettext
-      - name: Build (except macOS arm64)
-        if: matrix.targetPlatform != 'macOS' || matrix.arch != 'arm64'
+          script/build.sh
+        env:
+          TARGET_PLATFORM: ${{ matrix.targetPlatform }}
+          TARGET_ARCH: ${{ matrix.arch }}
+      - name: Build (Ubuntu arm64)
+        if: matrix.targetPlatform == 'ubuntu' && matrix.arch == 'arm64'
+        uses: theofficialgman/arm-runner-action@v6
+        with:
+          base_image: https://cdimage.ubuntu.com/releases/18.04.6/release/ubuntu-18.04.5-preinstalled-server-arm64+raspi4.img.xz
+          bind_mount_repository: yes
+          image_additional_mb: 5000
+          cpu: cortex-a57
+          copy_repository_path: /home/runner/dugite-native
+          import_github_env: true
+          shell: /bin/bash
+          commands: |
+            sudo apt-get update
+            sudo apt-get install -y build-essential libcurl4-openssl-dev libssl-dev libexpat1-dev gettext tar jq p7zip-full wget curl         
+            export TARGET_PLATFORM="${{ matrix.targetPlatform }}"
+            export TARGET_ARCH="${{ matrix.arch }}"
+            script/build.sh
+      - name: Build (Windows)
+        if: matrix.targetPlatform == 'win32'
+        shell: bash
+        run: script/build.sh
+        env:
+          TARGET_PLATFORM: ${{ matrix.targetPlatform }}
+          TARGET_ARCH: ${{ matrix.arch }}
+      - name: Build (macOS x64)
+        if: matrix.targetPlatform == 'macOS' && matrix.arch == 'x64'
         shell: bash
         run: script/build.sh
         env:
