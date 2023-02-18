@@ -43,6 +43,14 @@ jobs:
           - os: ubuntu-18.04
             friendlyName: Linux
             targetPlatform: ubuntu
+          - os: ubuntu-18.04
+            friendlyName: Linux
+            targetPlatform: ubuntu
+            arch: arm64
+          - os: ubuntu-18.04
+            friendlyName: Linux
+            targetPlatform: ubuntu
+            arch: arm
         exclude:
           - os: macos-10.15
             arch: x86
@@ -78,6 +86,28 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libcurl4-openssl-dev libexpat1-dev gettext
+      - name: Install extra dependencies for building Git on Ubuntu (arm64)
+        if: matrix.targetPlatform == 'ubuntu' && matrix.arch == 'arm64'
+        run: |
+          cat /etc/apt/sources.list
+          echo "deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ bionic main universe multiverse restricted" | sudo tee /etc/apt/sources.list
+          echo "deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ bionic-updates main universe multiverse restricted" | sudo tee -a /etc/apt/sources.list
+          echo "deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic main universe multiverse restricted" | sudo tee -a /etc/apt/sources.list
+          echo "deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main universe multiverse restricted" | sudo tee -a /etc/apt/sources.list
+          sudo dpkg --add-architecture arm64
+          sudo apt-get update
+          sudo apt-get install gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libcurl4-openssl-dev:arm64 libssl-dev:arm64 build-essential libcurl4-openssl-dev:arm64 libssl-dev:arm64 libexpat1-dev gettext tar jq p7zip-full p7zip-rar pkg-config wget curl xz-utils unzip zip bzip2 zsync automake autoconf zlib1g-dev:arm64
+      - name: Install extra dependencies for building Git on Ubuntu (arm)
+        if: matrix.targetPlatform == 'ubuntu' && matrix.arch == 'arm'
+        run: |
+          cat /etc/apt/sources.list
+          echo "deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ bionic main universe multiverse restricted" | sudo tee /etc/apt/sources.list
+          echo "deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ bionic-updates main universe multiverse restricted" | sudo tee -a /etc/apt/sources.list
+          echo "deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic main universe multiverse restricted" | sudo tee -a /etc/apt/sources.list
+          echo "deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main universe multiverse restricted" | sudo tee -a /etc/apt/sources.list
+          sudo dpkg --add-architecture armhf
+          sudo apt-get update
+          sudo apt-get install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libcurl4-openssl-dev:armhf libssl-dev:armhf build-essential libcurl4-openssl-dev:armhf libssl-dev:armhf libexpat1-dev gettext tar jq p7zip-full p7zip-rar pkg-config wget curl xz-utils unzip zip bzip2 zsync automake autoconf zlib1g-dev:armhf
       - name: Build (except macOS arm64)
         if: matrix.targetPlatform != 'macOS' || matrix.arch != 'arm64'
         shell: bash
