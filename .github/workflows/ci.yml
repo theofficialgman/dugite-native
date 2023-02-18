@@ -53,7 +53,7 @@ jobs:
             arch: x86
           - os: ubuntu-18.04
             arch: x86
-    timeout-minutes: 20
+    timeout-minutes: 50
     steps:
       # We need to use Xcode 10.3 for maximum compatibility with older macOS (x64)
       - name: Switch to Xcode 10.3
