@@ -80,7 +80,7 @@ tar -xf $CURL_FILE
 
 (
 cd $CURL_FILE_NAME || exit 1
-./configure --prefix="$CURL_INSTALL_DIR" "$HOST" "$TARGET"
+./configure --without-brotli --prefix="$CURL_INSTALL_DIR" "$HOST" "$TARGET"
 make install
 )
 echo " -- Building git at $SOURCE to $DESTINATION"
