@@ -34,27 +34,19 @@ case "$TARGET_ARCH" in
   "x64")
     DEPENDENCY_ARCH="amd64"
     export CC="x86_64-linux-gcc -static -no-pie"
-    STRIP="x86_64-linux-strip"
-    HOST="--host=x86_64-linux"
-    TARGET="--target=x86_64-linux" ;;
+    PREFIX="x86_64-linux";;
   "x86")
     DEPENDENCY_ARCH="x86"
     export CC="i686-linux-gcc -static"
-    STRIP="i686-linux-strip"
-    HOST="--host=i686-linux"
-    TARGET="--target=i686-linux" ;;
+    PREFIX="i686-linux" ;;
   "arm64")
     DEPENDENCY_ARCH="arm64"
     export CC="aarch64-linux-gcc -static"
-    STRIP="aarch64-linux-strip"
-    HOST="--host=aarch64-linux"
-    TARGET="--target=aarch64-linux" ;;
+    PREFIX="aarch64-linux" ;;
   "arm")
     DEPENDENCY_ARCH="arm"
     export CC="arm-linux-gcc -static"
-    STRIP="arm-linux-strip"
-    HOST="--host=arm-linux"
-    TARGET="--target=arm-linux" ;;
+    PREFIX="arm-linux" ;;
   *)
     exit 1 ;;
 esac
@@ -97,7 +89,7 @@ tar -xf "$OPENSSL_FILE"
 
 (
 cd $OPENSSL_FILE_NAME || exit 1
-./Configure --prefix="$OPENSSL_INSTALL_DIR" -static no-pic
+./Configure --prefix="$OPENSSL_INSTALL_DIR" --cross-compile-prefix="$PREFIX"- -static no-pic
 make install
 )
 
@@ -112,7 +104,7 @@ tar -xf $CURL_FILE
 
 (
 cd $CURL_FILE_NAME || exit 1
-./configure --disable-shared --with-zlib="$ZLIB_INSTALL_DIR" --with-openssl="$OPENSSL_INSTALL_DIR" --prefix="$CURL_INSTALL_DIR" "$HOST" "$TARGET"
+./configure --disable-shared --with-zlib="$ZLIB_INSTALL_DIR" --with-openssl="$OPENSSL_INSTALL_DIR" --prefix="$CURL_INSTALL_DIR" --host="$PREFIX" --target="$PREFIX"
 make install
 )
 
@@ -124,10 +116,10 @@ make clean
 make configure
 OPENSSLDIR="$OPENSSL_INSTALL_DIR" ZLIB_PATH="$ZLIB_INSTALL_DIR" CFLAGS='-Wall -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -U_FORTIFY_SOURCE' \
   LDFLAGS='-Wl,-Bsymbolic-functions -Wl,-z,relro' ac_cv_iconv_omits_bom=no ac_cv_fread_reads_directories=no ac_cv_snprintf_returns_bogus=no \
-  ./configure $HOST \
+  ./configure --host="$PREFIX" \
   --with-curl="$CURL_INSTALL_DIR" \
   --prefix=/
-sed -i "s/STRIP = strip/STRIP = $STRIP/" Makefile
+sed -i "s/STRIP = strip/STRIP = $PREFIX-strip/" Makefile
 DESTDIR="$DESTINATION" \
   NO_TCLTK=1 \
   NO_GETTEXT=1 \
