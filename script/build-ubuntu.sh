@@ -127,8 +127,6 @@ sed -i "s/STRIP = strip/STRIP = $PREFIX-strip/" Makefile
 DESTDIR="$DESTINATION" \
   NO_TCLTK=1 \
   NO_GETTEXT=1 \
-  NO_INSTALL_HARDLINKS=1 \
-  NO_R_TO_GCC_LINKER=1 \
   make strip install
 )
 
