@@ -125,7 +125,10 @@ jobs:
       - name: Build (except macOS arm64)
         if: matrix.targetPlatform != 'macOS' || matrix.arch != 'arm64'
         shell: bash
-        run: script/build.sh
+        run: |
+          echo "$PATH"
+          export PATH="$PATH"
+          script/build.sh
         env:
           TARGET_PLATFORM: ${{ matrix.targetPlatform }}
           TARGET_ARCH: ${{ matrix.arch }}
