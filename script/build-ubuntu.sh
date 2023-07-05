@@ -34,19 +34,23 @@ case "$TARGET_ARCH" in
   "x64")
     DEPENDENCY_ARCH="amd64"
     export CC="x86_64-linux-gcc -static -no-pie"
-    PREFIX="x86_64-linux";;
+    PREFIX="x86_64-linux" 
+    OPENSSL_TARGET="linux-x86_64" ;;
   "x86")
     DEPENDENCY_ARCH="x86"
     export CC="i686-linux-gcc -static"
-    PREFIX="i686-linux" ;;
+    PREFIX="i686-linux"
+    OPENSSL_TARGET="linux-x86" ;;
   "arm64")
     DEPENDENCY_ARCH="arm64"
     export CC="aarch64-linux-gcc -static"
-    PREFIX="aarch64-linux" ;;
+    PREFIX="aarch64-linux" 
+    OPENSSL_TARGET="linux-aarch64" ;;
   "arm")
     DEPENDENCY_ARCH="arm"
     export CC="arm-linux-gcc -static"
-    PREFIX="arm-linux" ;;
+    PREFIX="arm-linux"
+    OPENSSL_TARGET="linux-armv4" ;;
   *)
     exit 1 ;;
 esac
@@ -89,7 +93,7 @@ tar -xf "$OPENSSL_FILE"
 
 (
 cd $OPENSSL_FILE_NAME || exit 1
-CC=gcc ./Configure --prefix="$OPENSSL_INSTALL_DIR" --cross-compile-prefix="$PREFIX"- -static no-pic
+CC=gcc ./Configure "$OPENSSL_TARGET" --prefix="$OPENSSL_INSTALL_DIR" --cross-compile-prefix="$PREFIX"- -static no-pic
 make install
 )
 
