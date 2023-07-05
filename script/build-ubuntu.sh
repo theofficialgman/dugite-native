@@ -23,28 +23,28 @@ fi
 case "$TARGET_ARCH" in
   "x64")
     DEPENDENCY_ARCH="amd64"
-    export CC="gcc"
-    STRIP="strip"
-    HOST=""
-    TARGET="" ;;
+    export CC="x86_64-linux-gcc"
+    STRIP="x86_64-linux-strip"
+    HOST="--host=x86_64-linux"
+    TARGET="--target=x86_64-linux" ;;
   "x86")
     DEPENDENCY_ARCH="x86"
-    export CC="i686-linux-gnu-gcc"
-    STRIP="i686-gnu-strip"
-    HOST="--host=i686-linux-gnu"
-    TARGET="--target=i686-linux-gnu" ;;
+    export CC="i686-linux-gcc"
+    STRIP="i686-linux-strip"
+    HOST="--host=i686-linux"
+    TARGET="--target=i686-linux" ;;
   "arm64")
     DEPENDENCY_ARCH="arm64"
-    export CC="aarch64-linux-gnu-gcc"
-    STRIP="aarch64-linux-gnu-strip"
-    HOST="--host=aarch64-linux-gnu"
-    TARGET="--target=aarch64-linux-gnu" ;;
+    export CC="aarch64-linux-gcc"
+    STRIP="aarch64-linux-strip"
+    HOST="--host=aarch64-linux"
+    TARGET="--target=aarch64-linux" ;;
   "arm")
     DEPENDENCY_ARCH="arm"
-    export CC="arm-linux-gnueabihf-gcc"
-    STRIP="arm-linux-gnueabihf-strip"
-    HOST="--host=arm-linux-gnueabihf"
-    TARGET="--target=arm-linux-gnueabihf" ;;
+    export CC="arm-linux-gcc"
+    STRIP="arm-linux-strip"
+    HOST="--host=arm-linux"
+    TARGET="--target=arm-linux" ;;
   *)
     exit 1 ;;
 esac
