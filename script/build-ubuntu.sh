@@ -89,7 +89,7 @@ tar -xf "$OPENSSL_FILE"
 
 (
 cd $OPENSSL_FILE_NAME || exit 1
-./Configure --prefix="$OPENSSL_INSTALL_DIR" --cross-compile-prefix="$PREFIX"- -static no-pic
+CC=gcc ./Configure --prefix="$OPENSSL_INSTALL_DIR" --cross-compile-prefix="$PREFIX"- -static no-pic
 make install
 )
 
