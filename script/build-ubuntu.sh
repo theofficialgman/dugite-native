@@ -114,10 +114,10 @@ echo " -- Building git at $SOURCE to $DESTINATION"
 cd "$SOURCE" || exit 1
 make clean
 make configure
-OPENSSLDIR="$OPENSSL_INSTALL_DIR" ZLIB_PATH="$ZLIB_INSTALL_DIR" CFLAGS='-Wall -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -U_FORTIFY_SOURCE' \
+OPENSSLDIR="$OPENSSL_INSTALL_DIR" CFLAGS='-Wall -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -U_FORTIFY_SOURCE' \
   LDFLAGS='-Wl,-Bsymbolic-functions -Wl,-z,relro' ac_cv_iconv_omits_bom=no ac_cv_fread_reads_directories=no ac_cv_snprintf_returns_bogus=no \
   ./configure --host="$PREFIX" \
-  --with-curl="$CURL_INSTALL_DIR" \
+  --with-curl="$CURL_INSTALL_DIR" --with-zlib="$ZLIB_INSTALL_DIR" \
   --prefix=/
 sed -i "s/STRIP = strip/STRIP = $PREFIX-strip/" Makefile
 DESTDIR="$DESTINATION" \
