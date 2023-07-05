@@ -46,14 +46,18 @@ jobs:
       - name: Install dependencies into minimal dockerfile
         run: |
           # ubuntu dockerfile is very minimal (only 122 packages are installed)
-          # need to install updated git (from official git ppa) and other expected dependencies
+          # add dependencies expected by scripts
           apt update
           apt install -y software-properties-common lsb-release sudo wget curl build-essential jq autoconf automake pkg-config ca-certificates
+          # install new enough git to run actions/checkout
           sudo add-apt-repository ppa:git-core/ppa -y
           sudo apt update
           sudo apt install -y git
+          # install new enough npm/nodejs to build dugite-native
           curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
           sudo apt-get install -y nodejs
+          # avoid "fatal: detected dubious ownership in repository at '/__w/dugite-native/dugite-native'" error
+          git config --global --add safe.directory '*'
       # We need to use Xcode 11.7 for maximum compatibility with older macOS (x64)
       - name: Switch to Xcode 11.7
         if: matrix.targetPlatform == 'macOS' && matrix.arch == 'x64'
