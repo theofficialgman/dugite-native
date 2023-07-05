@@ -33,29 +33,29 @@ fi
 case "$TARGET_ARCH" in
   "x64")
     DEPENDENCY_ARCH="amd64"
-    export CC="x86_64-linux-gcc -static -no-pie"
+    export CC="x86_64-linux-gcc -no-pie"
     PREFIX="x86_64-linux" 
     OPENSSL_TARGET="linux-x86_64" ;;
   "x86")
     DEPENDENCY_ARCH="x86"
-    export CC="i686-linux-gcc -static"
+    export CC="i686-linux-gcc"
     PREFIX="i686-linux"
     OPENSSL_TARGET="linux-x86" ;;
   "arm64")
     DEPENDENCY_ARCH="arm64"
-    export CC="aarch64-linux-gcc -static"
+    export CC="aarch64-linux-gcc -no-pie"
     PREFIX="aarch64-linux" 
     OPENSSL_TARGET="linux-aarch64" ;;
   "arm")
     DEPENDENCY_ARCH="arm"
-    export CC="arm-linux-gcc -static"
+    export CC="arm-linux-gcc"
     PREFIX="arm-linux"
     OPENSSL_TARGET="linux-armv4" ;;
   *)
     exit 1 ;;
 esac
 
-export PKG_CONFIG="pkg-config --static"
+export PKG_CONFIG="pkg-config"
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_LFS_VERSION="$(jq --raw-output '.["git-lfs"].version[1:]' dependencies.json)"
