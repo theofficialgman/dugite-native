@@ -48,7 +48,7 @@ jobs:
           # ubuntu dockerfile is very minimal (only 122 packages are installed)
           # need to install updated git (from official git ppa) and other expected dependencies
           apt update
-          apt install -y software-properties-common lsb-release sudo wget curl build-essential jq
+          apt install -y software-properties-common lsb-release sudo wget curl build-essential jq autoconf automake pkg-config ca-certificates
           sudo add-apt-repository ppa:git-core/ppa -y
           sudo apt update
           sudo apt install -y git
@@ -82,7 +82,7 @@ jobs:
         if: matrix.targetPlatform == 'ubuntu' && matrix.arch == 'x64'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-gnutls-dev libexpat1-dev gettext
+          sudo apt-get install -y libcurl4-gnutls-dev libexpat1-dev zlib1g-dev gettext
       - name: Install extra dependencies for building Git on Ubuntu (x86)
         if: matrix.targetPlatform == 'ubuntu' && matrix.arch == 'x86'
         run: |
