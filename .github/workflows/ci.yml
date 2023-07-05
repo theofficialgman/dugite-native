@@ -46,9 +46,9 @@ jobs:
       - name: Install dependencies into minimal dockerfile
         run: |
           # ubuntu dockerfile is very minimal (only 122 packages are installed)
-          # need to install updated git (from official git ppa) and sudo ()
+          # need to install updated git (from official git ppa) and other expected dependencies
           apt update
-          apt install -y software-properties-common lsb-release sudo wget curl build-essential
+          apt install -y software-properties-common lsb-release sudo wget curl build-essential jq
           sudo add-apt-repository ppa:git-core/ppa -y
           sudo apt update
           sudo apt install -y git
