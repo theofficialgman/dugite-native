@@ -22,24 +22,15 @@ jobs:
   build:
     name: ${{ matrix.friendlyName }} ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
+    container:
+      image: ubuntu:18.04
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-11, windows-2019, ubuntu-20.04]
+        os: [ubuntu-20.04]
         arch: [x86, x64]
         go: [1.16.3]
         include:
-          - os: macos-11
-            friendlyName: macOS
-            targetPlatform: macOS
-          - os: macos-11
-            friendlyName: macOS
-            targetPlatform: macOS
-            arch: arm64
-            go: 1.16.3
-          - os: windows-2019
-            friendlyName: Windows
-            targetPlatform: win32
           - os: ubuntu-20.04
             friendlyName: Linux
             targetPlatform: ubuntu
@@ -51,11 +42,17 @@ jobs:
             friendlyName: Linux
             targetPlatform: ubuntu
             arch: arm
-        exclude:
-          - os: macos-11
-            arch: x86
     timeout-minutes: 20
     steps:
+      - name: Install dependencies into minimal dockerfile
+        run: |
+          # ubuntu dockerfile is very minimal (only 122 packages are installed)
+          # need to install updated git (from official git ppa) and sudo ()
+          apt update
+          apt install -y --force-yes software-properties-common lsb-release sudo
+          add-apt-repository ppa:git-core/ppa -y
+          apt update
+          apt install -y --force-yes git
       # We need to use Xcode 11.7 for maximum compatibility with older macOS (x64)
       - name: Switch to Xcode 11.7
         if: matrix.targetPlatform == 'macOS' && matrix.arch == 'x64'
