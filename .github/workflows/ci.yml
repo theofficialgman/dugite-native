@@ -118,10 +118,10 @@ jobs:
         if: matrix.targetPlatform == 'ubuntu'
         run: |
           wget ${{ matrix.toolchainurl }}
-          sudo mkdir -p /opt/musl-toolchain
-          sudo tar xvf $(basename ${{ matrix.toolchainurl }}) -C /opt/musl-toolchain --strip-components=1
+          sudo mkdir -p /builds/buildroot.org/toolchains-builder/build
+          sudo tar xvf $(basename ${{ matrix.toolchainurl }}) -C /builds/buildroot.org/toolchains-builder/build
           rm -rf $(basename ${{ matrix.toolchainurl }})
-          echo "/opt/musl-toolchain/bin" >> $GITHUB_PATH
+          echo "/builds/buildroot.org/toolchains-builder/build/$(basename ${{ matrix.toolchainurl }})/bin" >> $GITHUB_PATH
       - name: Build (except macOS arm64)
         if: matrix.targetPlatform != 'macOS' || matrix.arch != 'arm64'
         shell: bash
