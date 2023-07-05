@@ -126,6 +126,8 @@ jobs:
         if: matrix.targetPlatform != 'macOS' || matrix.arch != 'arm64'
         shell: bash
         run: |
+          echo "$PATH"
+          file /builds/buildroot.org/toolchains-builder/build/*/bin/autoconf
           script/build.sh
         env:
           TARGET_PLATFORM: ${{ matrix.targetPlatform }}
