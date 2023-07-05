@@ -48,10 +48,12 @@ jobs:
           # ubuntu dockerfile is very minimal (only 122 packages are installed)
           # need to install updated git (from official git ppa) and sudo ()
           apt update
-          apt install -y --force-yes software-properties-common lsb-release sudo npm
-          add-apt-repository ppa:git-core/ppa -y
-          apt update
-          apt install -y --force-yes git
+          apt install -y --force-yes software-properties-common lsb-release sudo
+          sudo add-apt-repository ppa:git-core/ppa -y
+          sudo apt update
+          sudo apt install -y --force-yes git
+          curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+          sudo apt-get install -y nodejs
       # We need to use Xcode 11.7 for maximum compatibility with older macOS (x64)
       - name: Switch to Xcode 11.7
         if: matrix.targetPlatform == 'macOS' && matrix.arch == 'x64'
