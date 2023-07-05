@@ -20,28 +20,38 @@ if [[ -z "${CURL_INSTALL_DIR}" ]]; then
   exit 1
 fi
 
+if [[ -z "${ZLIB_INSTALL_DIR}" ]]; then
+  echo "Required environment variable ZLIB_INSTALL_DIR was not set"
+  exit 1
+fi
+
+if [[ -z "${OPENSSL_INSTALL_DIR}" ]]; then
+  echo "Required environment variable OPENSSL_INSTALL_DIR was not set"
+  exit 1
+fi
+
 case "$TARGET_ARCH" in
   "x64")
     DEPENDENCY_ARCH="amd64"
-    export CC="x86_64-linux-gcc"
+    export CC="x86_64-linux-gcc -static -no-pie"
     STRIP="x86_64-linux-strip"
     HOST="--host=x86_64-linux"
     TARGET="--target=x86_64-linux" ;;
   "x86")
     DEPENDENCY_ARCH="x86"
-    export CC="i686-linux-gcc"
+    export CC="i686-linux-gcc -static"
     STRIP="i686-linux-strip"
     HOST="--host=i686-linux"
     TARGET="--target=i686-linux" ;;
   "arm64")
     DEPENDENCY_ARCH="arm64"
-    export CC="aarch64-linux-gcc"
+    export CC="aarch64-linux-gcc -static"
     STRIP="aarch64-linux-strip"
     HOST="--host=aarch64-linux"
     TARGET="--target=aarch64-linux" ;;
   "arm")
     DEPENDENCY_ARCH="arm"
-    export CC="arm-linux-gcc"
+    export CC="arm-linux-gcc -static"
     STRIP="arm-linux-strip"
     HOST="--host=arm-linux"
     TARGET="--target=arm-linux" ;;
@@ -49,9 +59,8 @@ case "$TARGET_ARCH" in
     exit 1 ;;
 esac
 
-export PKG_CONFIG_PATH=/usr/bin/pkg-config
+export PKG_CONFIG="pkg-config --static"
 
-export NO_OPENSSL=1
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_LFS_VERSION="$(jq --raw-output '.["git-lfs"].version[1:]' dependencies.json)"
 GIT_LFS_CHECKSUM="$(jq --raw-output ".\"git-lfs\".files[] | select(.arch == \"$DEPENDENCY_ARCH\" and .platform == \"linux\") | .checksum" dependencies.json)"
@@ -62,9 +71,39 @@ source "$CURRENT_DIR/compute-checksum.sh"
 # shellcheck source=script/check-static-linking.sh
 source "$CURRENT_DIR/check-static-linking.sh"
 
+echo " -- Building vanilla zlib at $ZLIB_INSTALL_DIR instead of distro-specific version"
+
+ZLIB_FILE_NAME="zlib-1.2.13"
+ZLIB_FILE="$ZLIB_FILE_NAME.tar.gz"
+
+cd /tmp || exit 1
+curl -LO "https://zlib.net/$ZLIB_FILE"
+tar -xf $ZLIB_FILE
+
+(
+cd $ZLIB_FILE_NAME || exit 1
+./configure --prefix="$ZLIB_INSTALL_DIR"
+make install
+)
+
+echo " -- Building vanilla OpenSSL3 at $OPENSSL_INSTALL_DIR instead of distro-specific version"
+
+OPENSSL_FILE_NAME="openssl-3.1.1"
+OPENSSL_FILE="$OPENSSL_FILE_NAME".tar.gz
+
+cd /tmp || exit 1
+curl -LO https://github.com/openssl/openssl/releases/download/"$OPENSSL_FILE_NAME"/"$OPENSSL_FILE"
+tar -xf "$OPENSSL_FILE"
+
+(
+cd $OPENSSL_FILE_NAME || exit 1
+./Configure --prefix="$OPENSSL_INSTALL_DIR" -static no-pic
+make install
+)
+
 echo " -- Building vanilla curl at $CURL_INSTALL_DIR instead of distro-specific version"
 
-CURL_FILE_NAME="curl-7.61.1"
+CURL_FILE_NAME="curl-8.1.2"
 CURL_FILE="$CURL_FILE_NAME.tar.gz"
 
 cd /tmp || exit 1
@@ -73,16 +112,17 @@ tar -xf $CURL_FILE
 
 (
 cd $CURL_FILE_NAME || exit 1
-./configure --prefix="$CURL_INSTALL_DIR" "$HOST" "$TARGET"
+./configure --disable-shared --with-zlib="$ZLIB_INSTALL_DIR" --with-openssl="$OPENSSL_INSTALL_DIR" --prefix="$CURL_INSTALL_DIR" "$HOST" "$TARGET"
 make install
 )
+
 echo " -- Building git at $SOURCE to $DESTINATION"
 
 (
 cd "$SOURCE" || exit 1
 make clean
 make configure
-CFLAGS='-Wall -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -U_FORTIFY_SOURCE' \
+OPENSSLDIR="$OPENSSL_INSTALL_DIR" ZLIB_PATH="$ZLIB_INSTALL_DIR" CFLAGS='-Wall -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -U_FORTIFY_SOURCE' \
   LDFLAGS='-Wl,-Bsymbolic-functions -Wl,-z,relro' ac_cv_iconv_omits_bom=no ac_cv_fread_reads_directories=no ac_cv_snprintf_returns_bogus=no \
   ./configure $HOST \
   --with-curl="$CURL_INSTALL_DIR" \
